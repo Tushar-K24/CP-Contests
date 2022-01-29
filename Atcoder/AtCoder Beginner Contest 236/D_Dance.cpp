@@ -52,45 +52,35 @@ class Math{
 
 }Math;
 //=============================================================================
-vec<vec<int>> dp(1e6,vec<int>(2,-2));
-
-int sol_dp(int a,int n, int rot){
-    if(n==1) return 0;
-    if(dp[n][rot]!=-2){
-        return dp[n][rot];
+//0000
+int mx_fun(vec<vec<int>> &a, int idx, vec<bool> &chosen, int n, int curr){
+    if(idx==2*n) return curr;
+    if(chosen[idx]){
+        return mx_fun(a,idx+1,chosen,n,curr);
     }
-    int &p=dp[n][rot];
-    p=-1;
-    if(n%a==0){
-        p=sol_dp(a,n/a,0);
-        if(p!=-1) p++;
+    chosen[idx]=true;
+    int ans=0;
+    for(int i=idx+1;i<2*n;i++){
+        if(chosen[i]) continue;
+        chosen[i]=true;
+        int temp = mx_fun(a,idx+1,chosen,n,a[idx][i]^curr);
+        chosen[i]=false;
+        ans = max(ans,temp);
     }
-    if(rot) return p;
-    int l = 0;
-    int temp=n;
-    while(temp){
-        l++;
-        temp/=10;
-    }
-    int pw=Math.pow(10,l-1);
-    for(int i=1;i<l;i++){
-        int x=n%pw;
-        x*=10;
-        x+=n/pw;
-        if(x%10==0) break;
-        n=x;
-        temp=sol_dp(a,n,1);
-        // cout<<"for n: "<<n<<" our temp_soln: "<<temp<<endl;
-        if(temp==-1) continue;
-        temp+=i;
-        if(p==-1) p=temp;
-        else p=min(p,temp);
-    }
-    return p;
+    chosen[idx]=false;
+    return ans;
 }
+
 void solve(){
-    int a, n; cin>>a>>n;
-    cout<<sol_dp(a,n,false)<<endl;   
+    int n; cin>>n;
+    vec<vec<int>> a(2*n,vec<int>(2*n));
+    for(int i=0;i<2*n-1;i++){
+        for(int j=i+1;j<2*n;j++){
+            cin>>a[i][j];
+        }
+    }
+    vec<bool> chosen(2*n, false);
+    cout<<mx_fun(a,0,chosen,n,0)<<endl;
 }
 
 int32_t main(){

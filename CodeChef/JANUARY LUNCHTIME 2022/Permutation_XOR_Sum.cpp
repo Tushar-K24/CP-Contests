@@ -1,5 +1,14 @@
 //Author: Tushar Khanduri
-#include<bits/stdc++.h>
+#include<iostream>
+#include<vector>
+#include<map>
+#include<queue>
+#include<set>
+#include<stack>
+#include<cmath>
+#include<string>
+#include<bitset>
+#include<algorithm>
 #define int long long
 #define endl "\n"
 #define pb push_back
@@ -52,52 +61,28 @@ class Math{
 
 }Math;
 //=============================================================================
-vec<vec<int>> dp(1e6,vec<int>(2,-2));
 
-int sol_dp(int a,int n, int rot){
-    if(n==1) return 0;
-    if(dp[n][rot]!=-2){
-        return dp[n][rot];
-    }
-    int &p=dp[n][rot];
-    p=-1;
-    if(n%a==0){
-        p=sol_dp(a,n/a,0);
-        if(p!=-1) p++;
-    }
-    if(rot) return p;
-    int l = 0;
-    int temp=n;
-    while(temp){
-        l++;
-        temp/=10;
-    }
-    int pw=Math.pow(10,l-1);
-    for(int i=1;i<l;i++){
-        int x=n%pw;
-        x*=10;
-        x+=n/pw;
-        if(x%10==0) break;
-        n=x;
-        temp=sol_dp(a,n,1);
-        // cout<<"for n: "<<n<<" our temp_soln: "<<temp<<endl;
-        if(temp==-1) continue;
-        temp+=i;
-        if(p==-1) p=temp;
-        else p=min(p,temp);
-    }
-    return p;
+int solve(int n){
+    if(n<=1) return 0;
+    int x=1;
+    while(x<=n) x<<=1;
+    x--;
+    int y = x^n;
+    if(y==0) return solve(n-1);
+    int ans=(n-y+1)*x;
+    return ans + solve(y-1);
 }
+
 void solve(){
-    int a, n; cin>>a>>n;
-    cout<<sol_dp(a,n,false)<<endl;   
+    int n; cin>>n;
+    cout<<solve(n)<<endl;
 }
 
 int32_t main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     int tc=1;
-    // cin>>tc;
+    cin>>tc;
     while(tc--){
         solve();
     }
